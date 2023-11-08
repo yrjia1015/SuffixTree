@@ -1,12 +1,10 @@
 library(R6)
-library(hash)#ÓÃÓÚÊµÏÖpythonÖĞµÄ×ÖµäÊı¾İÀàĞÍ
+library(hash)
 library(igraph)
 
 Node <- R6Class("Node",
         public=list(
-          suffix_node = NULL,
-      
-          #initializeÊÇ³õÊ¼»¯º¯Êı£¬()ÖĞ¿ÉÒÔÉèÖÃ³õÊ¼Öµ    
+          suffix_node = NULL,  
           initialize = function(suffix_node = -1){
             self$suffix_node <- suffix_node
               }
@@ -20,8 +18,7 @@ Edge <- R6Class("Edge",
                   last_char_index = NULL,
                   source_node_index = NULL,
                   dest_node_index = NULL,
-                  
-                  #initializeÊÇ³õÊ¼»¯º¯Êı£¬()ÖĞ¿ÉÒÔÉèÖÃ³õÊ¼Öµ    
+                     
                   initialize = function(first_char_index,
                                         last_char_index,
                                         source_node_index,
@@ -33,7 +30,6 @@ Edge <- R6Class("Edge",
                     self$dest_node_index <- dest_node_index
                   },
                   
-                  #¶¨ÒåÒ»¸öÄÚ²¿º¯Êı£¬Èç¹ûÄÚ²¿º¯Êı²»ÊÇÀàµÄ×îºóÒ»¸öµÄ»°£¬ĞèÒªÔÚº¯Êı½áÎ²¼ÓÒ»¸ö,
                   length = function(){
                     return (self$last_char_index - self$first_char_index)  
                   }
@@ -48,7 +44,6 @@ Suffix <- R6Class("Suffix",
                   last_char_index = NULL,
                   
                   
-                  #initializeÊÇ³õÊ¼»¯º¯Êı£¬()ÖĞ¿ÉÒÔÉèÖÃ³õÊ¼Öµ    
                   initialize = function(source_node_index,
                                         first_char_index,
                                         last_char_index){
@@ -58,7 +53,6 @@ Suffix <- R6Class("Suffix",
                     self$last_char_index <- last_char_index
                   },
                   
-                  #¶¨ÒåÒ»¸öÄÚ²¿º¯Êı£¬Èç¹ûÄÚ²¿º¯Êı²»ÊÇÀàµÄ×îºóÒ»¸öµÄ»°£¬ĞèÒªÔÚº¯Êı½áÎ²¼ÓÒ»¸ö,
                   length = function(){
                     return (self$last_char_index - self$first_char_index)  
                   },
@@ -82,21 +76,16 @@ SuffixTree <- R6Class("SuffixTree",
                         nodes = NULL,
                         edges = NULL,
                         active = NULL,
-                        
-                        #initializeÊÇ³õÊ¼»¯º¯Êı£¬()ÖĞ¿ÉÒÔÉèÖÃ³õÊ¼Öµ    
+                         
                         initialize = function(inputstr){
                           self$string <- paste(inputstr,"#",sep = "")
-                          #×Ö·ûÏòÁ¿³¤¶È¼ÆËãº¯Êılength(),Æä·µ»Ø×Ö·ûÏòÁ¿µÄ³¤¶È£¬¶ø·Ç×Ö·û´®ÖĞ×Ö·ûµÄ³¤¶È¡£ÒªÓÃnchar()
-                          self$N <- nchar(self$string) #pythonÖĞĞèÒª-1£¬²»ÖªµÀÕâÀïĞè²»ĞèÒª£¬RµÄË÷Òı´Ó1¿ªÊ¼
+                          self$N <- nchar(self$string)
                           self$nodes = c(Node$new())
-                          self$edges = hash()#³õÊ¼»¯Ò»¸ö¼üÖµ¶Ô ÓÃ.set(self$edges,key=,values=)À´¸³Öµ
-                          #has.key(key,hash)ÓÃÀ´²éÕÒhash¶ÔÏóÖĞÊÇ·ñÖ¸¶¨keyµÄ¼üÖµ¶Ô£¬·µ»Ø²¼¶ûÖµ
-                          #unname(object)¿ÉÒÔÈ¥µôÏòÁ¿ÖĞÔªËØµÄÃû³Æ ,ĞèÒªÈ¡self$edgesÖĞ
-                          #Ä³¸öÌØ¶¨¼ü¡°a¡±,¶ÔÓ¦µÄÖµÊ±£¬ÓÃunname(values(p,keys="a"))[[1]],Õâ¸öÃüÁî¿ÉÒÔ×¼È·¶¨Î»µ½ÒªÕÒµÄÄÇ¸öÊµÀı»¯¶ÔÏó£¬ĞèÒªÊ²Ã´ÊôĞÔÔÙÄÃ¾ÍºÃÁË
+                          self$edges = hash()
+                          #has.key(key,hash)
+                          #unname(object)
+
                           
-                          #Õâ¸öSuffix$newÊÇ²»ÊÇ¸Ã´Ó£¨1,1,-1£©¸Ä³É(1£¬1£¬0)
-                          self$active = Suffix$new(1,1,0)#ÓëpythonÓĞ²î±ğÊÇÒòÎªRµÄË÷Òı´Ó1¿ªÊ¼£¬µÚ¶ş¸ö²ÎÊıÊÇfirst_char_index£¬
-                          #RÓïÑÔÖĞµÄrange()º¯Êı·µ»ØµÄÊÇ×î´óÖµºÍ×îĞ¡Öµ
                           for (i in (1:nchar(self$string))){
                             #print(i)
                             #print(self$string)
@@ -109,34 +98,25 @@ SuffixTree <- R6Class("SuffixTree",
                           }
                         },
                         insert_edge = function(edge){
-                          #.setÓÃÓÚÏòhash±íÌí¼Ó¼üÖµ¶Ô£¬
-                          #keyÖµ±ØĞëÊÇ×Ö·û´®ËùÒÔÓÃ×Ö·û´®Á¬½Óº¯Êıpaste()ºÍ×Ö·û´®½ØÈ¡º¯Êısubstr½«source_node_indexÓë×Ó´®ÓÃ¡°£¬¡±Á¬½Ó³É×Ö·û´®×÷Îª¼ü
-                          #valueÖµÎª´«ÈëµÄedge
                           key = paste(edge$source_node_index,substr(self$string,edge$first_char_index,edge$first_char_index),sep = ",")
                           .set(self$edges,key,edge)
                         },
                         
                         remove_edge = function(edge){
-                          #del(x,hash)¿ÉÓÃÀ´ÔÚhash¶ÔÏóÖĞÉ¾³ı¼üÎªxµÄ¼üÖµ¶Ô,paste()º¯ÊıÖĞÊÇÖ¸¶¨µÄ¼ü
                           del(paste(edge$source_node_index,substr(self$string,edge$first_char_index,edge$first_char_index),sep = ","),self$edges)
                         },
                         
                         split_edge = function(edge,suffix){
-                          #ÊµÀı»¯¶ÔÏóÓÃ£º¶ÔÏóÃû$new()
                           self$nodes <- append(self$nodes,Node$new())
                           #print("+++++++++++++++")
                           e = Edge$new(edge$first_char_index,(edge$first_char_index + suffix$length())
-                                       ,suffix$source_node_index,length(self$nodes))    #length(self$nodes)-1²»ÖªµÀÕâÀïĞè²»ĞèÒª-1£¬ÏÖÔÚÃ»¼õÒ»£¬Ó¦¸Ã²»ÓÃ£¬ÒòÎªRÒÔ1¿ªÊ¼Ë÷ÒıÂï
-                          #ÀàÄÚµ÷ÓÃ×Ô¼ºÀàÄÚµÄ·½·¨µÄÊ±ºò£¬ĞèÒªÔÚ·½·¨Ãû³ÆÇ°Ãæ¼Óself$
+                                       ,suffix$source_node_index,length(self$nodes))   
                           self$remove_edge(edge)
-                          #ÀàÄÚµ÷ÓÃ×Ô¼ºÀàÄÚµÄ·½·¨µÄÊ±ºò£¬ĞèÒªÔÚ·½·¨Ãû³ÆÇ°Ãæ¼Óself$
                           self$insert_edge(e)
-                          #·ÃÎÊÏòÁ¿ÖĞµÄÀàÊ±Ë÷ÒıÍâÒª¼ÓÉÏ[[]]²ÅÄÜ·ÃÎÊµÃµ½ÀàÖĞµÄÊôĞÔ
-                          self$nodes[[e$dest_node_index]]$suffix_node = suffix$source_node_index  #Õâ¾ä»°Ó¦¸ÃÃ»ÎÊÌâ!!!  
-                          #RÃ»ÓĞ+=
-                          edge$first_char_index = edge$first_char_index + suffix$length() + 1        #+++++++++++Õâ¸öµØ·½±¾À´ÊÇÓĞÒ»¸ö+1µÄ
+                          self$nodes[[e$dest_node_index]]$suffix_node = suffix$source_node_index  
+                          #Ræ²¡æœ‰+=
+                          edge$first_char_index = edge$first_char_index + suffix$length() + 1        
                           edge$source_node_index = e$dest_node_index
-                          #ÀàÄÚµ÷ÓÃ×Ô¼ºÀàÄÚµÄ·½·¨µÄÊ±ºò£¬ĞèÒªÔÚ·½·¨Ãû³ÆÇ°Ãæ¼Óself$
                           self$insert_edge(edge)
                           return (e$dest_node_index)
                         },
@@ -144,7 +124,7 @@ SuffixTree <- R6Class("SuffixTree",
                         canonize_suffix = function(suffix){
                           #print("-------------------------")
                           if (!(suffix$explicit())){  #!!!!!!
-                            #È¡edgesÖĞÌØ¶¨¼üµÄÖµ£¨ÖµÎªÒ»¸ö±ß£©¾ÍÖ»ÄÜÕâÑù
+
                             #print("+++++++++++++++")
                             e = unname(values(self$edges,keys=paste(suffix$source_node_index,substr(self$string,suffix$first_char_index,suffix$first_char_index),sep = ",")))[[1]]
                             if (e$length() <= suffix$length()){   
@@ -156,13 +136,13 @@ SuffixTree <- R6Class("SuffixTree",
                         },
                         
                         add_prefix = function(last_char_index){
-                          last_parent_node = 0    #ÕâÊÇ¸ö¿ÉÒÉµã,ÎÒ¾õµÃ²»¸ÃÊÇ-1£¬¸ÃÊÇ0
+                          last_parent_node = 0    
                           #print(self$edges)
                           while (TRUE){
                             parent_node = self$active$source_node_index
                             #print(self$edges)
                             if (self$active$explicit()){
-                              #has.key()ÓÃÓÚÅĞ¶ÏÒÔÌØ¶¨×Ö·û´®Îª¼üµÄ¼üÖµ¶ÔÔÚ²»ÔÚhash¶ÔÏóÖĞ
+                              #has.key()
                               #print(keys(self$edges))
                               #print(self$edges[1])
                               #print(paste(self$active$source_node_index,substr(self$string,last_char_index,last_char_index),sep = ","))
@@ -173,7 +153,6 @@ SuffixTree <- R6Class("SuffixTree",
                             }
                             else {
                               e = unname(values(self$edges,keys=paste(self$active$source_node_index,substr(self$string,self$active$first_char_index,self$active$first_char_index),sep = ",")))[[1]]
-                              #²»ÖªµÀÕâÀïµÄ+1¶Ô²»¶Ô !!!!!!!  ++++++++++++++++++++Õâ¸öifµÄ+1Ò»¶¨ÊÇÒª¼ÓµÄ£¬ÒòÎªÕâÊÇËãµÄÆ«ÒÆÁ¿
                               if (substr(self$string,(e$first_char_index + self$active$length() + 1 ),(e$first_char_index + self$active$length() + 1)) == substr(self$string,last_char_index,last_char_index)){
                                 break
                               }
@@ -181,11 +160,11 @@ SuffixTree <- R6Class("SuffixTree",
                             }
                             
                             self$nodes <-append(self$nodes,Node$new())
-                            e = Edge$new(last_char_index,self$N,parent_node,length(self$nodes))#length(self$nodes)²»ÓÃ-1£¬¿Ï¶¨   !!!!
+                            e = Edge$new(last_char_index,self$N,parent_node,length(self$nodes))#length(self$nodes)ä¸ç”¨-1ï¼Œè‚¯å®š   !!!!
                             self$insert_edge(e)
                             #print(self$edges)
                             
-                            if (last_parent_node > 1){   #+++++++++++++++++Õâ¸öµØ·½ÎÒ¾õµÃÓ¦¸ÃÊÇ1¶ø²»ÊÇ0
+                            if (last_parent_node > 1){  
                               self$nodes[[last_parent_node]]$suffix_node = parent_node
                             } 
                             last_parent_node = parent_node
@@ -203,12 +182,11 @@ SuffixTree <- R6Class("SuffixTree",
                             self$canonize_suffix(self$active)
                           }
                           
-                          if (last_parent_node > 1){  #+++++++++++++++++Õâ¸öµØ·½ÎÒ¾õµÃÓ¦¸ÃÊÇ1¶ø²»ÊÇ0
+                          if (last_parent_node > 1){  
                             self$nodes[[last_parent_node]]$suffix_node = parent_node
                           }
                           self$active$last_char_index = self$active$last_char_index + 1
                           self$canonize_suffix(self$active)
-                          #ºóÃæÈç¹ûÃ»ÎÊÌâµÄ»°ÔÙÕâ×¢ÊÍÏÂÃæ¼Ó¿ÉÊÓ»¯
                           self$draw()
                         },
                         
@@ -216,7 +194,6 @@ SuffixTree <- R6Class("SuffixTree",
                           Start <- c()
                           End <- c()
                           Str <- c()
-                          #´ÓhashÀàÖĞÌáÈ¡Ã¿¸ö¼ü¶ÔÓ¦µÄEdgeÀà£¨ÓÃvalues()£©£¬·ÅÔÚÏòÁ¿ÖĞ
                           for (edge in values(self$edges)){
                             Start <- append(Start,edge$source_node_index)
                             End <- append(End,edge$dest_node_index)
